@@ -39,6 +39,7 @@ This is a production-hardened, FastAPI-based web application for "reallyrobert.c
 
 ## Local Development
 1. Create a virtual environment: `python -m venv .venv && source .venv/bin/activate`
-2. Install dependencies: `pip install -r requirements.txt`
+2. Install dependencies: `pip install -r requirements.txt` (or `pip install -r requirements-dev.txt` to also get test dependencies)
 3. Configure `.env` with `DATABASE_URL`.
 4. Run: `uvicorn app.main:app --reload`
+5. Run tests: `pytest`
