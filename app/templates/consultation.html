@@ -1,0 +1,65 @@
+<div class="animate-fadeIn max-w-2xl mx-auto py-10">
+    <div class="bg-white p-8 md:p-12 rounded-3xl shadow-lg border border-gray-100">
+        <h2 class="text-3xl font-bold mb-8 text-center text-gray-900">Let's Deep Dive Into Your Efficiency</h2>
+        
+        <!-- Form -->
+        <form hx-post="/contact" 
+              hx-target="#cta-container" 
+              hx-indicator="#loading-indicator"
+              class="space-y-6 text-left">
+            
+            <!-- Textareas -->
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">What’s the biggest constraint currently limiting your growth or performance?</label>
+                    <textarea name="constraint" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-300" rows="2"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">What’s happening today that you’d most like to fix, and what have you already tried?</label>
+                    <textarea name="fix_attempt" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-300" rows="2"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Where are you seeing the biggest gap between your current performance and where you need to be?</label>
+                    <textarea name="performance_gap" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-300" rows="2"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">If we could remove one bottleneck from the business over the next 90 days, which one would have the greatest impact?</label>
+                    <textarea name="impact_bottleneck" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-300" rows="2"></textarea>
+                </div>
+            </div>
+            
+            <hr class="my-8 border-gray-100">
+            
+            <!-- Inputs -->
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                    <input type="text" name="name" maxlength="50" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-300">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Business Email</label>
+                    <input type="email" name="email" maxlength="200" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-300">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">LinkedIn Profile or Website Link</label>
+                <input type="url" name="link" placeholder="https://linkedin.com/in/username" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-300">
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div id="loading-indicator" class="htmx-indicator text-blue-600 font-semibold text-center py-2">
+                Sending...
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                <button type="submit" class="flex-1 bg-blue-600 text-white font-bold py-4 rounded-lg transition-all duration-300 ease-in-out hover:bg-blue-700 hover:shadow-lg hover:scale-[1.01] active:scale-[0.98]">
+                    Submit Inquiry
+                </button>
+                <button hx-get="/hero-cta" hx-target="#cta-container" hx-swap="outerHTML" class="px-8 py-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition font-semibold text-gray-700">
+                    Back to Home
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

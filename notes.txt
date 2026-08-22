@@ -1,0 +1,3 @@
+purpose: production performance, SEO, and maintainability.
+
+Excel, Onenote, Outlook, Power Automate & SharePoint

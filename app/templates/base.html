@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    
+    <!-- Favicon Placeholder -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22white%22/><text y=%22.9em%22 font-size=%2290%22 text-anchor=%22middle%22 fill=%22black%22>R</text></svg>">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="reallyrobert.com | Financial Efficiency Consulting">
+    <meta property="og:description" content="Expert financial efficiency and business consulting.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://reallyrobert.com/">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- HTMX CDN -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold text-blue-600">reallyrobert.com</a>
+            <div class="space-x-6">
+                <a href="#services" class="hover:text-blue-600 transition">Services</a>
+                <a href="#tools" class="hover:text-blue-600 transition">Tools</a>
+                <a href="https://on.computewithpour.com" target="_blank" class="hover:text-blue-600 transition">Blog</a>
+                <a href="#about" class="hover:text-blue-600 transition">About</a>
+                <!-- Renamed to 'Contact Us' and ensure smooth scroll -->
+                <button onclick="document.getElementById('contact').scrollIntoView({behavior: 'smooth'})" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition">Contact Us</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2026 Reallyrobert.com All Rights Reserved.</p>
+            <p class="mt-2 text-gray-400">Business Efficiency Consulting</p>
+        </div>
+    </footer>
+</body>
+</html>
