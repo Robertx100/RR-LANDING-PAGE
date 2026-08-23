@@ -22,8 +22,9 @@ async def add_security_headers(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
-    # Content-Security-Policy: Relaxed for now, strictly 'self' for assets
-    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com;"
+    # Content-Security-Policy: all assets are now self-hosted (see app/static/),
+    # so scripts and styles no longer need 'unsafe-inline' or third-party hosts.
+    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self';"
     return response
 
 @app.on_event("startup")

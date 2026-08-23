@@ -9,6 +9,9 @@ __pycache__/
 venv/
 env/
 
+# Node (build-time only — compiled output is committed under app/static/)
+node_modules/
+
 # Editor / OS
 .vscode/
 .idea/

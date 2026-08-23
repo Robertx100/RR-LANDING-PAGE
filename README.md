@@ -43,3 +43,10 @@ This is a production-hardened, FastAPI-based web application for "reallyrobert.c
 3. Configure `.env` with `DATABASE_URL`.
 4. Run: `uvicorn app.main:app --reload`
 5. Run tests: `pytest`
+
+### Frontend assets
+Tailwind CSS and HTMX are compiled/vendored into `app/static/` and committed, so the
+steps above are all a fresh clone needs. Only rebuild if you change a template's
+classes or bump the HTMX version:
+1. `npm install`
+2. `npm run build` (runs `build:css` and `build:js`; source lives in `assets/css/input.css` and `package.json`)
