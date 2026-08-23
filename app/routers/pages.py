@@ -1,9 +1,18 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
+
+# Allowlist of real service slugs (matches the links in index.html). Without this,
+# any arbitrary slug renders a page under reallyrobert.com with attacker-chosen
+# title text, e.g. /service-explainer/free-crypto-giveaway-click-here — usable for
+# phishing/content-spoofing under a trusted domain.
+SERVICE_EXPLAINERS = {
+    "financial-clarity-and-precision": "Financial Clarity & Precision",
+    "operational-efficiency": "Operational Efficiency",
+}
 
 @router.get("/robots.txt", response_class=Response)
 async def get_robots():
@@ -31,6 +40,12 @@ async def read_root(request: Request):
         request=request, name="index.html", context={"title": "reallyrobert.com | Financial Efficiency Consulting"}
     )
 
+@router.get("/privacy", response_class=HTMLResponse)
+async def get_privacy(request: Request):
+    return templates.TemplateResponse(
+        request=request, name="privacy.html", context={"title": "Privacy Notice | reallyrobert.com"}
+    )
+
 @router.get("/consultation", response_class=HTMLResponse)
 async def get_consultation(request: Request):
     return templates.TemplateResponse(request=request, name="consultation.html")
@@ -41,8 +56,11 @@ async def get_hero_cta(request: Request):
 
 @router.get("/service-explainer/{service_name}", response_class=HTMLResponse)
 async def get_service_explainer(request: Request, service_name: str):
+    display_name = SERVICE_EXPLAINERS.get(service_name)
+    if display_name is None:
+        raise HTTPException(status_code=404, detail="Not Found")
     return templates.TemplateResponse(
-        request=request, 
-        name="service_explainer.html", 
-        context={"service_name": service_name.replace("-", " ").title()}
+        request=request,
+        name="service_explainer.html",
+        context={"service_name": display_name}
     )

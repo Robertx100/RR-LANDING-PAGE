@@ -2,4 +2,10 @@
 command = "pip install -r requirements.txt"
 
 [run]
-command = "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+# --forwarded-allow-ips='*': the container has no inbound path other than
+# Railway's own edge proxy, so trusting the immediate hop's X-Forwarded-For is
+# safe here (it does not mean "trust any IP on the internet"). Without this,
+# request.client.host is always the proxy's internal IP, so the /contact rate
+# limiter (keyed on client IP) shares one bucket across every visitor instead
+# of limiting each one separately.
+command = "uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'"

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-20 bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-6 max-w-2xl">
+        <div class="bg-white p-10 md:p-16 rounded-3xl shadow-xl border border-blue-50">
+            <h2 class="text-3xl font-bold mb-8 text-gray-900">Privacy Notice</h2>
+
+            <div class="space-y-6 text-gray-600 leading-relaxed">
+                <p>
+                    This page explains what happens to the information you submit through the
+                    forms on this site.
+                </p>
+
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-1">What we collect</h3>
+                    <p>Your name, email address, a LinkedIn profile or website link, and any answers you write into the inquiry form.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Why</h3>
+                    <p>Solely to respond to your inquiry and follow up about the consulting services on this site. It isn't used for anything else.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Storage &amp; sharing</h3>
+                    <p>Your submission is stored in our database for as long as needed to respond to and follow up on your inquiry. It is not sold, and it is not shared with third parties.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-1">Questions or deletion requests</h3>
+                    <p>Reach out through the contact form on the homepage and mention you'd like your information removed.</p>
+                </div>
+
+                <p class="text-sm text-gray-400 pt-4 border-t border-gray-100">
+                    This is a plain-language summary of our actual data handling, not a formal legal document.
+                </p>
+            </div>
+
+            <a href="/"
+                class="inline-block mt-10 bg-blue-600 text-white px-8 py-3 rounded-full font-bold text-lg
+                       transition-all duration-300 ease-in-out
+                       hover:bg-blue-700 hover:shadow-lg hover:scale-[1.05]
+                       active:scale-[0.95] active:shadow-inner">
+                ← Back
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

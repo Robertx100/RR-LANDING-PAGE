@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request, Form, Depends, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from typing import Annotated, Optional
+from urllib.parse import urlparse
 from sqlalchemy.ext.asyncio import AsyncSession
 from email_validator import validate_email, EmailNotValidError
 from app.limiter import limiter
@@ -18,6 +19,23 @@ logger = get_logger(__name__)
 async def health_check():
     return JSONResponse(content={"status": "ok"})
 
+def _is_same_origin_request(request: Request) -> bool:
+    """CSRF defense for the state-changing POST below. There's no session/cookie
+    auth in this app for SameSite cookies to protect, so validate Origin/Referer
+    directly (OWASP's recommended fallback) to stop a third-party page from
+    silently auto-submitting this form through a visitor's browser.
+
+    Compares hosts only (not scheme) so this doesn't depend on uvicorn's
+    proxy-header trust config correctly reconstructing request.url.scheme."""
+    host = request.headers.get("host", "")
+    origin = request.headers.get("origin")
+    if origin is not None:
+        return urlparse(origin).netloc == host
+    referer = request.headers.get("referer")
+    if referer is not None:
+        return urlparse(referer).netloc == host
+    return False
+
 @router.post("/contact", response_class=HTMLResponse)
 @limiter.limit("5/minute")
 async def contact_form(
@@ -31,6 +49,13 @@ async def contact_form(
     impact_bottleneck: Annotated[Optional[str], Form()] = None,
     db: AsyncSession = Depends(get_db)
 ):
+    if not _is_same_origin_request(request):
+        logger.warning("Rejected cross-site /contact submission (Origin/Referer mismatch)")
+        return HTMLResponse(
+            content='<div class="text-red-600 p-4">Request blocked for security reasons. Please refresh the page and try again.</div>',
+            status_code=403,
+        )
+
     # Server-side validation
     name = name.strip()
     email = email.strip()

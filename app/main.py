@@ -24,7 +24,14 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-Frame-Options"] = "DENY"
     # Content-Security-Policy: all assets are now self-hosted (see app/static/),
     # so scripts and styles no longer need 'unsafe-inline' or third-party hosts.
-    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self';"
+    # frame-ancestors is the CSP3 equivalent of X-Frame-Options, kept for browsers
+    # that prioritize it over the legacy header.
+    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self'; frame-ancestors 'none';"
+    # HSTS: browsers ignore this header entirely unless served over HTTPS, so it's
+    # a no-op locally and only takes effect once deployed behind Railway's TLS edge.
+    response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
     return response
 
 @app.on_event("startup")

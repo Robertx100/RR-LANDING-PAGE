@@ -42,11 +42,16 @@ async def test_contact_submission_duplicate_email(setup_db):
                 "performance_gap": "Large",
                 "impact_bottleneck": "Revenue"
             }
+            # Origin header required: /contact rejects cross-site POSTs (see
+            # app/routers/api.py's _is_same_origin_request), and httpx doesn't
+            # send one by default the way a real browser form submission would.
+            headers = {"Origin": "http://test"}
+
             # First submission
-            await ac.post("/contact", data=data)
-            
+            await ac.post("/contact", data=data, headers=headers)
+
             # Second submission with same email
-            response = await ac.post("/contact", data=data)
+            response = await ac.post("/contact", data=data, headers=headers)
     
     # Check that it returns an error (or 200 with error message as currently implemented)
     assert response.status_code == 200
