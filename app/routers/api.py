@@ -42,11 +42,11 @@ async def contact_form(
     request: Request,
     name: Annotated[str, Form(max_length=50)],
     email: Annotated[str, Form(max_length=200)],
-    link: Annotated[str, Form()],
-    constraint: Annotated[Optional[str], Form()] = None,
-    fix_attempt: Annotated[Optional[str], Form()] = None,
-    performance_gap: Annotated[Optional[str], Form()] = None,
-    impact_bottleneck: Annotated[Optional[str], Form()] = None,
+    link: Annotated[str, Form(max_length=500)],
+    constraint: Annotated[Optional[str], Form(max_length=2000)] = None,
+    fix_attempt: Annotated[Optional[str], Form(max_length=2000)] = None,
+    performance_gap: Annotated[Optional[str], Form(max_length=2000)] = None,
+    impact_bottleneck: Annotated[Optional[str], Form(max_length=2000)] = None,
     db: AsyncSession = Depends(get_db)
 ):
     if not _is_same_origin_request(request):
@@ -70,29 +70,46 @@ async def contact_form(
     except EmailNotValidError as e:
         return f'<div class="text-red-600 p-4">Invalid email address.</div>'
 
+    # The consultation form's four questions are HTML-required there, but the
+    # shorter homepage contact form never sends them at all. If any one is
+    # present, treat this as a consultation submission and require all four —
+    # otherwise a partially-filled deep dive would save silently with gaps.
+    deep_dive = {
+        "constraint": constraint.strip() if constraint else "",
+        "fix_attempt": fix_attempt.strip() if fix_attempt else "",
+        "performance_gap": performance_gap.strip() if performance_gap else "",
+        "impact_bottleneck": impact_bottleneck.strip() if impact_bottleneck else "",
+    }
+    if any(deep_dive.values()) and not all(deep_dive.values()):
+        return '<div class="text-red-600 p-4">Please answer all four questions, or leave them all blank.</div>'
+
     submission_data = {
         "name": name,
         "email": email,
         "link": link,
-        "constraint": constraint.strip() if constraint else None,
-        "fix_attempt": fix_attempt.strip() if fix_attempt else None,
-        "performance_gap": performance_gap.strip() if performance_gap else None,
-        "impact_bottleneck": impact_bottleneck.strip() if impact_bottleneck else None,
+        "constraint": deep_dive["constraint"] or None,
+        "fix_attempt": deep_dive["fix_attempt"] or None,
+        "performance_gap": deep_dive["performance_gap"] or None,
+        "impact_bottleneck": deep_dive["impact_bottleneck"] or None,
     }
 
     try:
         await save_contact_submission(db, submission_data)
         logger.info(f"Submission saved for email: {mask_email(email)}")
-
-        return templates.TemplateResponse(
-            request=request, 
-            name="contact_success.html", 
-            context={"name": name}
-        )
-    except ValueError as ve:
-        logger.warning(f"Validation error for {mask_email(email)}: {ve}")
-        return f'<div class="text-red-600 p-4">{str(ve)}</div>'
+    except ValueError:
+        # Duplicate email: save is skipped, but the response below still looks
+        # like a fresh success. Revealing "already submitted" here would let
+        # anyone probe this endpoint to check whether a given email has
+        # already contacted us — logging it (masked) is enough for our own
+        # visibility without exposing that to the requester.
+        logger.info(f"Duplicate submission attempt for email: {mask_email(email)}")
     except Exception as e:
         logger.error(f"Failed to save submission for {mask_email(email)}: {e}")
         return f'<div class="text-red-600 p-4">Failed to save submission. Please try again later.</div>'
+
+    return templates.TemplateResponse(
+        request=request,
+        name="contact_success.html",
+        context={"name": name}
+    )
 

@@ -48,11 +48,22 @@ async def test_contact_submission_duplicate_email(setup_db):
             headers = {"Origin": "http://test"}
 
             # First submission
-            await ac.post("/contact", data=data, headers=headers)
+            first = await ac.post("/contact", data=data, headers=headers)
 
             # Second submission with same email
-            response = await ac.post("/contact", data=data, headers=headers)
-    
-    # Check that it returns an error (or 200 with error message as currently implemented)
-    assert response.status_code == 200
-    assert "Email already submitted" in response.text
+            second = await ac.post("/contact", data=data, headers=headers)
+
+    # The duplicate must look identical to a fresh success to the requester —
+    # revealing "already submitted" would let this endpoint be used to probe
+    # whether a given email has already contacted us.
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert "Success" in second.text
+    assert "Email already submitted" not in second.text
+
+    # ... but it must not actually create a second row.
+    async with TestingSessionLocal() as session:
+        result = await session.execute(
+            select(ContactSubmission).filter(ContactSubmission.email == "duplicate@test.com")
+        )
+        assert len(result.scalars().all()) == 1
