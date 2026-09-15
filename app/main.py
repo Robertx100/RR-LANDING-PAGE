@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -12,7 +13,12 @@ import os
 docs_url = "/docs" if os.getenv("ENVIRONMENT") == "development" else None
 redoc_url = "/redoc" if os.getenv("ENVIRONMENT") == "development" else None
 
-app = FastAPI(docs_url=docs_url, redoc_url=redoc_url)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db()
+    yield
+
+app = FastAPI(docs_url=docs_url, redoc_url=redoc_url, lifespan=lifespan)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -25,10 +31,6 @@ async def add_security_headers(request: Request, call_next):
     # Content-Security-Policy: Relaxed for now, strictly 'self' for assets
     response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com;"
     return response
-
-@app.on_event("startup")
-async def startup_event():
-    await init_db()
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
