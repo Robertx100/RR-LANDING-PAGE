@@ -39,6 +39,6 @@ This is a production-hardened, FastAPI-based web application for "reallyrobert.c
 
 ## Local Development
 1. Create a virtual environment: `python -m venv .venv && source .venv/bin/activate`
-2. Install dependencies: `pip install -r requirements.txt`
-3. Configure `.env` with `DATABASE_URL`.
+2. Install dependencies: `pip install -r requirements-dev.txt` (includes `aiosqlite`, for the zero-setup SQLite path below, plus test tooling; use `requirements.txt` alone if pointing at a real Postgres instance instead).
+3. Copy `.env.example` to `.env` and fill in `DATABASE_URL` (defaults to a local SQLite file so you don't need Postgres running to get started) and `ENVIRONMENT=development` (enables `/docs` and `/redoc`).
 4. Run: `uvicorn app.main:app --reload`
